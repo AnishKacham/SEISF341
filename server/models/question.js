@@ -31,13 +31,7 @@ const questionSchema = new Schema({
         default: 0
     },
 
-    answers: [answerSchema],
-
-    tags: [String],
-
-    upvoteList: [String],
-
-    downvoteList: [String]
+    answers: [answerSchema]
     
 }, { timestamps: true })
 

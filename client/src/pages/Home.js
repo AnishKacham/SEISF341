@@ -7,17 +7,15 @@ import Questionwrapper from '../components/Questionwrapper'
 export default function Home() {
     const [questions,setQuestions] = useState([]);
     useEffect(()=>{
-        axios.get('http://localhost:5000/all-questions')
+        axios.get('/all-questions')
         .then(res=>{
             console.log(res);
             setQuestions(res.data);
-            console.log(questions)
         })
         .catch(err=>{
             console.error(err);
         })
     },[])
-    
     return(
         <div>
             <Container maxW='container.lg' border='solid black' padding='12px' borderRadius={8}>
@@ -25,9 +23,9 @@ export default function Home() {
                     spacing={4}
                     align='stretch'>
                {
-                   questions.map(question => 
-                    <Questionwrapper key={question._id} question = {question} />
-                   )
+                   questions.map(question =>(
+                    <Questionwrapper key={question._id} question={question}  ></Questionwrapper>
+                   ))
                }
                </VStack>
             </Container>
