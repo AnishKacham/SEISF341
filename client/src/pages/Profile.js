@@ -9,6 +9,7 @@ export default function Profile(){
     const [questions, setQuestions] = useState([])
 
     const delQ = (id) => {
+
         axios.delete(`/q/${id}`, { headers : {
           'x-access-token': localStorage.getItem('jwtToken') 
           } })
@@ -23,6 +24,7 @@ export default function Profile(){
                     setProfile(res.data[0]);
 
                     res.data[0].questions.map(qid => {
+
                         axios.get(`/q/${qid}`)
                         .then(res=>{
                             setQuestions(questions => [...questions, res.data])
