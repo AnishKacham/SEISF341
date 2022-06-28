@@ -23,7 +23,7 @@ const Question = ({ email }) => {
     }
 
     useEffect(()=>{
-        axios.get(`http://localhost:5000/q/${id}`)
+        axios.get(`/q/${id}`)
         .then(res=>{
             console.log(res);
             setQuestion(res.data);
@@ -37,7 +37,7 @@ const Question = ({ email }) => {
     const up = () => {
         console.log("up");
         
-        axios({method: 'put', url: `http://localhost:5000/upvote/${id}`, headers : {
+        axios({method: 'put', url: `/upvote/${id}`, headers : {
             'x-access-token': localStorage.getItem('jwtToken') 
         }})
         .then(res=> {
@@ -52,7 +52,7 @@ const Question = ({ email }) => {
     const down = () => {
         console.log("down");
 
-        axios({method: 'put', url: `http://localhost:5000/downvote/${id}`, headers : {
+        axios({method: 'put', url: `/downvote/${id}`, headers : {
             'x-access-token': localStorage.getItem('jwtToken') 
         }})
         .then(res=> {
@@ -67,7 +67,7 @@ const Question = ({ email }) => {
     const upAns = (ans) => {
         console.log("upAns");
         
-        axios({method: 'put', url: `http://localhost:5000/upvote/${id}`, headers : {
+        axios({method: 'put', url: `/upvote/${id}`, headers : {
             'x-access-token': localStorage.getItem('jwtToken') 
         }, params: {
             ans: ans
@@ -84,7 +84,7 @@ const Question = ({ email }) => {
     const downAns = (ans) => {
         console.log("downAns");
 
-        axios({method: 'put', url: `http://localhost:5000/downvote/${id}`, headers : {
+        axios({method: 'put', url: `/downvote/${id}`, headers : {
             'x-access-token': localStorage.getItem('jwtToken') 
         }, params: {
             ans: ans
@@ -101,7 +101,7 @@ const Question = ({ email }) => {
     const postAnswer = () => {
         const ans = { body: answer }
 
-        axios.post(`http://localhost:5000/answer/${id}`, ans, { headers : {
+        axios.post(`/answer/${id}`, ans, { headers : {
             'x-access-token': localStorage.getItem('jwtToken') 
         } }).then(res => {
             console.log(res);
@@ -115,7 +115,7 @@ const Question = ({ email }) => {
     }
 
     const deleteAnswer = (ans) => {
-        axios({method: 'delete', url: `http://localhost:5000/q/${id}`, headers : {
+        axios({method: 'delete', url: `/q/${id}`, headers : {
             'x-access-token': localStorage.getItem('jwtToken') 
         }, params: {
             ans: ans
@@ -132,7 +132,7 @@ const Question = ({ email }) => {
     const approveAnswer = (ans) => {
         // console.log(ans);
         // console.log(id);
-        axios({method: 'put', url: `http://localhost:5000/approve/${id}/${ans}`, headers : {
+        axios({method: 'put', url: `/approve/${id}/${ans}`, headers : {
             'x-access-token': localStorage.getItem('jwtToken') 
         }, params: {
             answer: ans
@@ -146,12 +146,54 @@ const Question = ({ email }) => {
         })
     }
 
+    const getColorUp = () =>{
+        for( let i=0;i<question.upvoteList.length;i++){
+            if(question.upvoteList[i]===email){
+                return "green";
+            }
+        }
+        return "gray";
+    }
+
+    const getColorDown = () =>{
+        for( let i=0;i<question.downvoteList.length;i++){
+            if(question.downvoteList[i]===email){
+                return "red";
+            }
+        }
+        return "gray";
+    }
+    const getColorAnsUp = (aID) =>{
+        for(let i=0;i<question.answers.length;i++){
+            if(question.answers[i]._id==aID){
+                for( let j=0;j<question.answers[i].upvoteList.length;j++){
+                    if(question.answers[i].upvoteList[j]===email){
+                        return "green";
+                    }
+                }
+            }
+        }
+        return "gray";
+    }
+
+    const getColorAnsDown = (aID) =>{
+        for(let i=0;i<question.answers.length;i++){
+            if(question.answers[i]._id==aID){
+                for( let j=0;j<question.answers[i].downvoteList.length;j++){
+                    if(question.answers[i].downvoteList[j]===email){
+                        return "red";
+                    }
+                }
+            }
+        }
+        return "gray";
+    }
 
 
     return ( 
         <div
         >
-
+            
             { question && (
                 
                 <Grid
@@ -166,9 +208,9 @@ const Question = ({ email }) => {
                 <GridItem rowSpan={1} colSpan={1} h='20'>
                     <Grid templateColumns='repeat(5, 1fr)' gap={4} >
                     <GridItem colStart={1} colEnd={1} h='20'>
-                        <IconButton h='8' icon={<BiUpvote/>} colorScheme="green" onClick={up}/>
+                        <IconButton h='8' icon={<BiUpvote/>} colorScheme={getColorUp()} onClick={up}> </IconButton>
                         <br/>
-                        <IconButton h='8' icon={<BiDownvote/>} colorScheme="red" onClick={down}/>
+                        <IconButton h='8' icon={<BiDownvote/>} colorScheme={getColorDown()} onClick={down}/>
                         <Popover>
                                 <PopoverTrigger>
                                     <IconButton icon={<BiShareAlt/>}>Trigger</IconButton>
@@ -252,8 +294,8 @@ const Question = ({ email }) => {
                                 
                                 <Grid templateColumns='repeat(3, 1fr)'>
                                     <GridItem colStart={2}><Text align="right" fontSize="3xl">{answer.upvotes}</Text></GridItem>
-                                    <GridItem colStart={2} marginLeft="650px"><IconButton w='8' icon={<BiUpvote/>} colorScheme="green" onClick={() => upAns(answer._id)}/></GridItem>
-                                    <GridItem colStart={3}><IconButton w='8' icon={<BiDownvote/>} colorScheme="red" onClick={() => downAns(answer._id)}/></GridItem>
+                                    <GridItem colStart={2} marginLeft="650px"><IconButton w='8' icon={<BiUpvote/>} colorScheme={getColorAnsUp(answer._id)} onClick={() => upAns(answer._id)}/></GridItem>
+                                    <GridItem colStart={3}><IconButton w='8' icon={<BiDownvote/>} colorScheme={getColorAnsDown(answer._id)} onClick={() => downAns(answer._id)}/></GridItem>
                                     <GridItem colStart={4}>
                                     <Popover>
                                 <PopoverTrigger>
