@@ -1,13 +1,13 @@
-import { Container, VStack } from "@chakra-ui/react";
+import { Box, Container, StackDivider, VStack } from "@chakra-ui/react";
 import Questionwrapper from '../components/Questionwrapper'
 
 
 export default function Home({ questions, email, deleter }) {
-    
     return(
-        <div >
-            <Container maxW='container.lg' border='solid black' padding='12px' borderRadius={8} bgColor='white'>
+        <Box>
+            <Container maxW='container.lg' border='solid' borderColor='gray.300' padding='12px' borderRadius={8} bgColor='white'>
                 <VStack 
+                    divider={<StackDivider borderColor='gray.300' />}
                     spacing={4}
                     align='stretch'>
                {
@@ -22,6 +22,6 @@ export default function Home({ questions, email, deleter }) {
                }
                </VStack>
             </Container>
-        </div>
+        </Box>
     )
 }

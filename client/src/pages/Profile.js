@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Grid, GridItem, Image, Heading} from "@chakra-ui/react";
+import { Grid, GridItem, Image, Heading, Spinner, Text} from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import Home from "./Home";
 
@@ -7,6 +7,7 @@ export default function Profile(){
     
     const [profile, setProfile] = useState('')
     const [questions, setQuestions] = useState([])
+    const [loading,setLoading] = useState(true);
 
     const delQ = (id) => {
 
@@ -38,7 +39,9 @@ export default function Profile(){
         }
     
     useEffect(() => {
+        setLoading(true);
         getProfile()
+        setLoading(false);
         }, [])
 
     return(
@@ -47,7 +50,9 @@ export default function Profile(){
                 <Image src={localStorage.getItem('pplink')}></Image>
             </GridItem>
             <GridItem align="left" colSpan={2}>
-                <Heading size="md">Name: {profile.fullName}</Heading>
+                <Heading size="md">Name: {
+                    loading ? <Spinner size="sm"/> : <Text as='span'>{profile.fullName}</Text>
+                } </Heading>
                 <Heading size="md">Email: {profile.email}</Heading>
                 <Heading size="md">Total Upvotes: {profile.upvotes}</Heading>
             </GridItem>

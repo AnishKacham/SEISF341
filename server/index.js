@@ -398,6 +398,7 @@ app.put('/upvote/:question', auth, (req, res) => {
       }
  
       else {
+        console.log(qId)
         let old = doc.upvotes
         doc.downvoteList = doc.downvoteList.filter(id => id != uId)
 
@@ -408,7 +409,7 @@ app.put('/upvote/:question', auth, (req, res) => {
         doc.upvotes = doc.upvoteList.length - doc.downvoteList.length
 
         User.findOneAndUpdate({ email : doc.postedBy.email }, {
-          $inc: { "upvotes": doc.upvotes - old }
+          "upvotes": doc.upvotes - old
         }, function(err, res) {
           if(err) console.log(err);
   
@@ -571,6 +572,10 @@ app.put('/report/:question', auth, (req, res) => {
     res.status(500).json(err)
   });
   
+})
+
+app.get('/oauth/google', (req,res) => {
+  console.log(req.query);
 })
 
 app.put('/approve/:question/:answer', auth, (req, res) => {

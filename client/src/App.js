@@ -7,6 +7,7 @@ import Profile from './pages/Profile';
 import Ask from './pages/Ask'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { UserProvider } from './context/userContext';
 
 function App() {
 
@@ -55,7 +56,7 @@ function App() {
       backgroundColor: "papayawhip",
       height:"500vh"
   }} 
-  >
+  > <UserProvider>
       <Router>
         <Navbar setter = {setter} search = {searchTerm} searcher = { searcher } login = { setEmail }/>
         <Routes>
@@ -65,6 +66,7 @@ function App() {
           <Route path="/askquestion" element={<Ask />}></Route>
         </Routes>
       </Router>
+      </UserProvider>
     </div>
   );
 }

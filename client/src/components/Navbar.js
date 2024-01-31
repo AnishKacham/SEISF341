@@ -1,74 +1,32 @@
 import {Text, Heading, Flex, Link as LinkC, Button, Input, InputGroup, InputLeftElement, IconButton,Image} from '@chakra-ui/react'
 import {Link} from 'react-router-dom'
-import {SearchIcon} from '@chakra-ui/icons'
+import { SearchIcon, ExternalLinkIcon} from '@chakra-ui/icons'
 import {useEffect, useState} from 'react' ;
-
+import { Link as LinkChakra } from '@chakra-ui/react';
 import React from 'react' ;
-import {GoogleLogin,GoogleLogout} from 'react-google-login' ;
+import { GoogleLogin } from '@react-oauth/google';
 // refresh token
 import {refreshTokenSetup} from '../utils/refreshToken' ;
 // import { appendFile } from 'fs';
 import axios from 'axios';
+import { getGoogleOAuthURL } from '../utils/googleOAuth';
 
 const clientId = '980895739592-obqt1v1p1vng0co9bfdnkr0r3pff4kp3.apps.googleusercontent.com' ;
 
-
-
 export default function Navbar({ setter, search, searcher, login }){
 
-  const [showloginButton, setShowloginButton] = useState(true);
-  const [showlogoutButton, setShowlogoutButton] = useState(false);
-  const [name, setName] = useState();
-  const [email, setEmail] = useState();
-  const [pplink, setPPLink] = useState();
-
-  const sendDeets = async (name,email)=>{
-    // console.log(name,email);
-    axios.post("/login", {name,email})
-    .then((res)=>{
-      // console.log(res);
-      localStorage.setItem('jwtToken',res.data.token);
-      // console.log(localStorage.getItem('jwtToken'));
-      localStorage.setItem('email', email);
-      login(email)
-    })
+  const onLoginSuccess = async (credResponse) => {
+    try{
+      const userDetails = await axios.post("/loginSafe",credResponse);
+    }
+    catch(loginError){
+      console.log("Error Logging In", loginError);
+    }
   }
 
-  const onLoginSuccess = (res) => {
-    // console.log('INSIDE LOGIN SUCCESS FUNCTION')
-    setPPLink(res.profileObj.imageUrl);
-    setName(res.profileObj.name)
-    setEmail(res.profileObj.email);
-    localStorage.setItem('pplink',res.profileObj.imageUrl);
-    localStorage.setItem('name', res.profileObj.name);
-    localStorage.setItem('email', res.profileObj.email);
-    // console.log('PROFILE_OBJECT: ', res.profileObj);
-    // console.log('PROFILE_PICTURE: ',res.profileObj.imageUrl);
-    // console.log('NAME: ', res.profileObj.name);
-    // console.log('EMAIL: ', res.profileObj.email);
-    // window.location.reload();
-    refreshTokenSetup(res);
-    setShowloginButton(false);
-    setShowlogoutButton(true);
-    sendDeets(res.profileObj.name,res.profileObj.email);
-};
-
-const onLoginFailure = (res) => {
-  console.log('Login Failed:', res);
-};
-
-const onSignoutSuccess = () => {
-  alert("You have been logged out successfully");
-  console.clear();
-  setPPLink();
-  setEmail();
-  setName();
-  setShowloginButton(true);
-  setShowlogoutButton(false);
-  login('');
-  localStorage.clear();
-  window.location.reload();
-};
+  const onLoginFailure = (loginError) => {
+    console.log(loginError);
+  }
 
     return(
         <>
@@ -107,31 +65,10 @@ const onSignoutSuccess = () => {
         </InputGroup>
         </Flex>
         <Flex justify="right" w="40%" align="center">
-          { showloginButton ?
-                <GoogleLogin
-                    clientId={clientId}
-                    buttonText="Sign In"
-                    onSuccess={onLoginSuccess}
-                    onFailure={onLoginFailure}
-                    cookiePolicy={'single_host_origin'}
-                    isSignedIn={true}
-                /> : null}
-
-            { showlogoutButton ?
-                <GoogleLogout
-                    clientId={clientId}
-                    buttonText="Sign Out"
-                    onLogoutSuccess={onSignoutSuccess}
-                >
-                </GoogleLogout> : null
-            }
-          <Image
-          ml={5}
-            borderRadius='full'
-            boxSize='50px'
-            src={pplink}
-            alt={name}
-            /> 
+        <LinkChakra href={getGoogleOAuthURL()} isExternal>
+          Login with google <ExternalLinkIcon mx='2px' />
+        </LinkChakra>
+          {/* <GoogleLogin onSuccess={onLoginSuccess} onError={onLoginFailure} useOneTap auto_select/>  */}
         </Flex>
       </Flex>
       <Heading
